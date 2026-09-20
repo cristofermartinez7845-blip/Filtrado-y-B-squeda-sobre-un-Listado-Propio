@@ -1,17 +1,21 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { dispositivos } from './data/dispositivos';
 import ListaDispositivos from './components/ListaDispositivos';
 import './App.css';
 
 function App() {
   const [busqueda, setBusqueda] = useState('');
-  const [categoria, setCategoria] = useState('Todas')
+  const [categoria, setCategoria] = useState('Todas');
 
   const dispositivosFiltrados = dispositivos.filter((d) => {
-  const coincideNombre = d.nombre.toLowerCase().includes(busqueda.toLowerCase());
-  const coincideCategoria = categoria === 'Todas' || d.categoria === categoria;
-  return coincideNombre && coincideCategoria;
-});
+    const coincideNombre = d.nombre.toLowerCase().includes(busqueda.toLowerCase());
+    const coincideCategoria = categoria === 'Todas' || d.categoria === categoria;
+    return coincideNombre && coincideCategoria;
+  });
+
+  useEffect(() => {
+    console.log(`Resultados: ${dispositivosFiltrados.length}`);
+  }, [busqueda, categoria]);
 
   return (
     <div className="app">
@@ -31,7 +35,19 @@ function App() {
         <option value="Audio">Audio</option>
         <option value="Pantallas">Pantallas</option>
         <option value="Accesorios">Accesorios</option>
-</select>
+      </select>
+
+      <p className="contador">
+        {dispositivosFiltrados.length} de {dispositivos.length} dispositivos
+      </p>
+
+      {dispositivosFiltrados.length === 0 && (
+        <p className="vacio">No se encontraron dispositivos con esos filtros.</p>
+      )}
+
+      <button onClick={() => { setBusqueda(''); setCategoria('Todas'); }}>
+        Limpiar filtros
+      </button>
 
       <ListaDispositivos dispositivos={dispositivosFiltrados} />
     </div>
